@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hệ Thống Đặt Hàng - Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    
+    body { 
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    .navbar { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      padding: 15px 0;
+    }
+
+    .navbar-brand {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .container-fluid {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      margin-top: 25px;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-refresh {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-refresh:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      color: white;
+      text-decoration: none;
+    }
+
+    .auto-refresh-indicator {
+      font-size: 12px;
+      color: #667eea;
+      cursor: pointer;
+      padding: 6px 12px;
+      background: white;
+      border-radius: 4px;
+      border: 1px solid #e0e0e0;
+      transition: all 0.2s ease;
+    }
+
+    .auto-refresh-indicator:hover {
+      background: #f8f9ff;
+      border-color: #667eea;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      border: 1px solid #f0f0f0;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-card .stat-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .stat-card .stat-label {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .stat-card .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .content-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 20px;
+    }
+
+    @media (max-width: 992px) {
+      .content-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .orders-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .orders-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .order-item {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-left: 4px solid #667eea;
+      transition: all 0.2s ease;
+      border: 1px solid #e8e8e8;
+      border-left: 4px solid #667eea;
+    }
+
+    .order-item:hover {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .order-id {
+      font-weight: 700;
+      color: #667eea;
+      font-size: 13px;
+    }
+
+    .order-timestamp {
+      font-size: 11px;
+      color: #999;
+    }
+
+    .order-customer {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+
+    .order-details {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+      padding: 8px 0;
+    }
+
+    .order-details i {
+      margin-right: 4px;
+      color: #667eea;
+    }
+
+    .order-status {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .status-badge.done {
+      color: #27ae60;
+      background: #d5f4e6;
+    }
+
+    .status-badge.pending {
+      color: #f39c12;
+      background: #fdebd0;
+    }
+
+    .status-badge i {
+      font-size: 10px;
+    }
+
+    .form-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .form-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #667eea;
+      background: #f8f9ff;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      color: white;
+    }
+
+    .form-message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .form-message.alert-success {
+      background: #d5f4e6;
+      color: #27ae60;
+      border: 1px solid #27ae60;
+    }
+
+    .form-message.alert-danger {
+      background: #fadbd8;
+      color: #c0392b;
+      border: 1px solid #c0392b;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><i class="fas fa-shopping-cart"></i> Order System</a>
+      <span class="navbar-text text-white" style="font-size: 12px;">Quản lý đơn hàng real-time</span>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="header-section">
+      <div>
+        <h1 class="header-title">Dashboard</h1>
+      </div>
+      <div class="header-controls">
+        <button id="refreshBtn" class="btn-refresh">
+          <i class="fas fa-sync-alt"></i> Làm mới
+        </button>
+        <div class="auto-refresh-indicator" id="intervalSpan">
+          <i class="fas fa-play-circle"></i> Auto: <strong id="interval">5</strong>s
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon" style="color: #667eea;">
+          <i class="fas fa-box"></i>
+        </div>
+        <div class="stat-label">Tổng Đơn Hàng</div>
+        <div class="stat-value" id="totalCount">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" style="color: #27ae60;">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-label">Hoàn Thành</div>
+        <div class="stat-value" id="completedCount" style="color: #27ae60;">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" style="color: #f39c12;">
+          <i class="fas fa-hourglass-half"></i>
+        </div>
+        <div class="stat-label">Đang Xử Lý</div>
+        <div class="stat-value" id="processingCount" style="color: #f39c12;">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" style="color: #e74c3c;">
+          <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="stat-label">Lỗi</div>
+        <div class="stat-value" id="errorCount" style="color: #e74c3c;">0</div>
+      </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="orders-section">
+        <div class="orders-title">
+          <i class="fas fa-list-check"></i> Danh Sách Đơn Hàng Mới
+        </div>
+        <div id="ordersList">
+          <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>Chưa có đơn hàng nào</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-title">
+          <i class="fas fa-plus-circle"></i> Tạo Đơn Hàng
+        </div>
+        <form id="createOrderForm" onsubmit="return createOrder(event)">
+          <div class="form-group">
+            <label>Tên Khách Hàng</label>
+            <input type="text" id="customerName" placeholder="VD: Nguyễn Văn A" required>
+          </div>
+
+          <div class="form-group">
+            <label>Mã Sản Phẩm</label>
+            <input type="text" id="productId" placeholder="VD: SP001" required>
+          </div>
+
+          <div class="form-group">
+            <label>Số Lượng</label>
+            <input type="number" id="quantity" placeholder="VD: 5" min="1" required>
+          </div>
+
+          <div class="form-group">
+            <label>Giá (đ)</label>
+            <input type="number" id="totalPrice" placeholder="VD: 500000" min="0" step="1000" required>
+          </div>
+
+          <div class="form-group">
+            <label>Số Điện Thoại</label>
+            <input type="text" id="phone" placeholder="VD: 0901234567">
+          </div>
+
+          <div class="form-group">
+            <label>Địa Chỉ</label>
+            <input type="text" id="address" placeholder="VD: 123 Đường ABC, Quận X">
+          </div>
+
+          <div class="form-group">
+            <label>Mã Vận Đơn (tùy chọn)</label>
+            <input type="text" id="trackingNumber" placeholder="Ví dụ: TRK-123456">
+          </div>
+
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-paper-plane"></i> Tạo Đơn
+          </button>
+
+          <div id="formMessage" class="form-message"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let timer = null;
+    let intervalSec = 5;
+
+    async function loadOrders() {
+      try {
+        const res = await fetch('/api/orders');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const orders = await res.json();
+        
+        // Update stats
+        const total = orders.length || 0;
+        const completed = orders.filter(o => o.emailSent && o.inventoryUpdated && o.logged).length;
+        const processing = orders.filter(o => (!o.emailSent || !o.inventoryUpdated || !o.logged)).length;
+        const errors = 0;
+
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('completedCount').textContent = completed;
+        document.getElementById('processingCount').textContent = processing;
+        document.getElementById('errorCount').textContent = errors;
+
+        // Update order list (newest first)
+        const ordersList = document.getElementById('ordersList');
+        if (!orders || orders.length === 0) {
+          ordersList.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>Chưa có đơn hàng nào</p></div>';
+          return;
+        }
+
+        ordersList.innerHTML = '';
+        [...orders].reverse().slice(0, 15).forEach(o => {
+          const item = document.createElement('div');
+          item.className = 'order-item';
+            const timestamp = o.createdAt ? new Date(o.createdAt).toLocaleString('vi-VN') : 'N/A';
+            const phone = o.phone ? `<div><i class="fas fa-phone"></i> ${o.phone}</div>` : '';
+            const address = o.address ? `<div><i class="fas fa-location-dot"></i> ${o.address}</div>` : '';
+            const tracking = o.trackingNumber ? `<div><i class="fas fa-truck"></i> ${o.trackingNumber}</div>` : '';
+            item.innerHTML = `
+              <div class="order-header">
+                <span class="order-id">#${o.id}</span>
+                <span class="order-timestamp">${timestamp}</span>
+              </div>
+              <div class="order-customer">${o.customerName || 'N/A'}</div>
+              <div class="order-details">
+                <i class="fas fa-cubes"></i> ${o.productId} — ${o.quantity} × <strong>${o.totalPrice.toLocaleString('vi-VN')}đ</strong>
+              </div>
+              ${phone}
+              ${address}
+              ${tracking}
+              <div class="order-status">
+                <span class="status-badge ${o.emailSent ? 'done' : 'pending'}">
+                  <i class="fas ${o.emailSent ? 'fa-check' : 'fa-hourglass-end'}"></i>
+                  Email
+                </span>
+                <span class="status-badge ${o.inventoryUpdated ? 'done' : 'pending'}">
+                  <i class="fas ${o.inventoryUpdated ? 'fa-check' : 'fa-hourglass-end'}"></i>
+                  Kho
+                </span>
+                <span class="status-badge ${o.logged ? 'done' : 'pending'}">
+                  <i class="fas ${o.logged ? 'fa-check' : 'fa-hourglass-end'}"></i>
+                  Log
+                </span>
+              </div>
+            `;
+          ordersList.appendChild(item);
+        });
+      } catch (e) {
+        console.error('Load orders failed', e);
+        document.getElementById('ordersList').innerHTML = '<div class="empty-state"><p>⚠ Lỗi tải dữ liệu</p></div>';
+      }
+    }
+
+    async function createOrder(e) {
+      e.preventDefault();
+      const form = document.getElementById('createOrderForm');
+      const msg = document.getElementById('formMessage');
+      
+      const data = {
+        customerName: document.getElementById('customerName').value,
+        productId: document.getElementById('productId').value,
+        quantity: parseInt(document.getElementById('quantity').value),
+        totalPrice: parseFloat(document.getElementById('totalPrice').value),
+        phone: document.getElementById('phone').value || null,
+        address: document.getElementById('address').value || null,
+        trackingNumber: document.getElementById('trackingNumber').value || null
+      };
+      
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        if (res.ok) {
+          msg.className = 'form-message alert-success';
+          msg.textContent = '✓ Đơn hàng đã được tạo thành công!';
+          msg.style.display = 'block';
+          
+          form.reset();
+          
+          // Reload immediately
+          setTimeout(() => loadOrders(), 100);
+          
+          // Hide message after 3 seconds
+          setTimeout(() => msg.style.display = 'none', 3000);
+        } else {
+          msg.className = 'form-message alert-danger';
+          msg.textContent = '✗ Lỗi: ' + (await res.text());
+          msg.style.display = 'block';
+          setTimeout(() => msg.style.display = 'none', 4000);
+        }
+      } catch (e) {
+        msg.className = 'form-message alert-danger';
+        msg.textContent = '✗ Lỗi: ' + e.message;
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 4000);
+      }
+      return false;
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', () => loadOrders());
+    document.getElementById('intervalSpan').addEventListener('click', () => {
+      intervalSec = intervalSec === 5 ? 2 : 5;
+      document.getElementById('interval').textContent = intervalSec;
+      if (timer) clearInterval(timer);
+      timer = setInterval(loadOrders, intervalSec * 1000);
+    });
+
+    // Initial load (empty)
+    loadOrders();
+    timer = setInterval(loadOrders, intervalSec * 1000);
+  </script>
+</body>
+</html>
